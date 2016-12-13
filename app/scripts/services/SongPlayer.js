@@ -20,16 +20,19 @@
         var setSong = function(song) {
             if (currentBuzzObject) {
                 stopSong(SongPlayer.currentSong);
-        }
+            }
  
             currentBuzzObject = new buzz.sound(song.audioUrl, {
                 formats: ['mp3'],
-                preload: true
+                preload: true,
             });
             
             currentBuzzObject.bind('timeupdate', function() {
                 $rootScope.$apply(function() {
                     SongPlayer.currentTime = currentBuzzObject.getTime();
+                        if(currentBuzzObject.isEnded()) {
+                            SongPlayer.next();
+                        }
                 });
             });
  
@@ -54,7 +57,7 @@
         var stopSong = function(song) {
             currentBuzzObject.stop();
             song.playing = null;  
-        };
+        }; 
          
          /**
         * @function getSongIndex
@@ -169,6 +172,18 @@
             if (currentBuzzObject) {
                 currentBuzzObject.setVolume(volume);
             }
+        };
+         
+        SongPlayer.muteSong = function(song) {
+                song = song || SongPlayer.currentSong;
+                currentBuzzObject.mute();
+                song.muted = true;
+        };
+         
+        SongPlayer.unMuteSong = function(song) {
+                song = song || SongPlayer.currentSong;
+                currentBuzzObject.unmute();
+                song.muted = null;
         };
          
           return SongPlayer;
